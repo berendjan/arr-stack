@@ -1,0 +1,114 @@
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    restart: unless-stopped
+    ports:
+      - "8096:8096"   # HTTP
+      - "8920:8920"   # HTTPS (optional)
+    volumes:
+      - ./config/jellyfin:/config
+      - ./media/movies:/media/movies
+      - ./media/tv:/media/tv
+      - ./media/music:/media/music
+      - ./media/books:/media/books
+    environment:
+      - TZ=Europe/Amsterdam   # Adjust your timezone here
+    platform: linux/arm64
+
+  qbittorrent:
+    image: linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    restart: unless-stopped
+    ports:
+      - "8080:8080"       # Web UI port
+      - "6881:6881"       # Torrent peer port TCP
+      - "6881:6881/udp"   # Torrent peer port UDP (DHT)
+    volumes:
+      - ./config/qbittorrent:/config
+      - ./downloads:/downloads
+    environment:
+      - PUID=501           # Replace with your user id
+      - PGID=20           # Replace with your group id
+      - TZ=Europe/Amsterdam # Adjust to your timezone
+      - WEBUI_PORT=8080
+    platform: linux/arm64
+
+  prowlarr:
+    image: linuxserver/prowlarr:latest
+    container_name: prowlarr
+    restart: unless-stopped
+    #ports:
+    #  - "9696:9696"   # Prowlarr Web UI
+    volumes:
+      - ./config/prowlarr:/config
+    environment:
+      - PUID=501           # Replace with your user id
+      - PGID=20           # Replace with your group id
+      - TZ=Europe/Amsterdam # Adjust your timezone
+    platform: linux/arm64
+
+  radarr:
+    image: linuxserver/radarr:latest
+    container_name: radarr
+    restart: unless-stopped
+    ports:
+      - "7878:7878"
+    volumes:
+      - ./config/radarr:/config
+      - ./media/movies:/movies
+      - ./downloads:/downloads
+    environment:
+      - PUID=501   # You may adjust to your mac user id
+      - PGID=20
+      - TZ=Europe/Amsterdam
+    platform: linux/arm64
+
+  sonarr:
+    image: linuxserver/sonarr:latest
+    container_name: sonarr
+    restart: unless-stopped
+    ports:
+      - "8989:8989"
+    volumes:
+      - ./config/sonarr:/config
+      - ./media/tv:/tv
+      - ./downloads:/downloads
+    environment:
+      - PUID=501
+      - PGID=20
+      - TZ=Europe/Amsterdam
+    platform: linux/arm64
+
+  lidarr:
+    image: linuxserver/lidarr:latest
+    container_name: lidarr
+    restart: unless-stopped
+    ports:
+      - "8686:8686"
+    volumes:
+      - ./config/lidarr:/config
+      - ./media/music:/music
+      - ./downloads:/downloads
+    environment:
+      - PUID=501
+      - PGID=20
+      - TZ=Europe/Amsterdam
+    platform: linux/arm64
+
+  #   readarr:
+  #     image: linuxserver/readarr:latest
+  #     container_name: readarr
+  #     restart: unless-stopped
+  #     ports:
+  #       - "8787:8787"
+  #     volumes:
+  #       - ./config/readarr:/config
+  #       - ./media/books:/books
+  #       - ./downloads:/downloads
+  #     environment:
+  #       - PUID=501
+  #       - PGID=20
+  #       - TZ=Europe/Amsterdam
+  #     platform: linux/arm64
+
